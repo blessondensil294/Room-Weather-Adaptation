@@ -75,6 +75,28 @@ import statsmodels.formula.api as sm
 lmregrs = sm.OLS(Y_Train, X_Train).fit()
 lmregrs.summary()
 
+#Error Calculation of the training model 
+pred_train = lmregrs.predict(X_Train)
+err_train = pred_train - Y_Train
+
+#Error Calculation for the Test model
+pred_test = lmregrs.predict(X_Test)
+err_test = pred_test - Y_Test
+
+#Plot the model for actual and predicted
+plt.scatter(Y_Train, pred_train)
+plt.xlabel('Y Train Data')
+plt.ylabel('Predicted')
+plt.title('Main')
+
+#Plot the residuals and predicted value
+plt.scatter(pred_train, err_train, c="b", s=40, alpha = 0.5)
+plt.scatter(pred_test, err_test, c="g", s=40)
+plt.hlines(y=0, xmin=0, xmax=40)
+plt.title("Residuals Plot Train - Blue  Test - Green")
+plt.ylabel("Residuals")
+Text(0,0.5,"Residuals")
+
 #Model using Scikit learn
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
