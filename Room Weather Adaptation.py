@@ -13,13 +13,32 @@ import seaborn as sns
 
 #loading the data
 wed = pd.read_csv("E:\\Python\\Resume Projects\\Room weather adaptation\\Data\\Samples\\weatherHistoryBasic.csv")
+
+#Present Working Directory
+pwd
+
 #Shape and head of the dataframe
 print(wed.shape)
 wed.head()
 
-#Dependent Y Variable and Independent X Variable
-X = wed.iloc[:,0:2].values
-Y = wed.iloc[:,-1].values
+#Info of the dataframe
+wed.info()
+
+#Describe the dataframe (SUmmary)
+wed.describe()
+
+#To get the column names
+wed.columns
+
+
+
+#EDA
+
+#Pairplot of the data
+sns.pairplot(wed)
+
+#Distribution Plot
+sns.distplot(wed['Apparent'])
 
 #Correlation of the data
 sns.heatmap(wed.corr())
@@ -44,6 +63,10 @@ X = onehotencoder.fit_transform(X).toarray()
 #Avoid variable dummy trap - encoder creates 2 columsn and to remove the columns
 X=X[:,1:]
 
+#Dependent Y Variable and Independent X Variable
+X = wed[['Hour','Apparent']]
+Y = wed['Temperature']
+
 #Split into Train and test data
 from sklearn.model_selection import train_test_split
 X_Train, X_Test, Y_Train, Y_Test = train_test_split(X,Y, test_size = 0.2, random_state = 0)
@@ -56,20 +79,46 @@ lmreg = LinearRegression()
 lmreg.fit(X_Train, Y_Train)
 print(lmreg)
 
-#Predict the x test to get the y predict
-Y_Pred = lmreg.predict(X_Test)
-print(Y_Pred)
+#Model Evaluation
 
 #Coefficients
 print(lmreg.coef_)
+coeff_df = pd.DataFrame(lmreg.coef_,X.columns,columns=['Coefficient'])
+coeff_df
 
 #Intercepts
 print(lmreg.intercept_)
+
+#Predict the x test to get the y predict
+Y_Pred = lmreg.predict(X_Test)
+Y_Pred
+print(Y_Pred)
 
 #Calculate hte R2
 from sklearn.metrics import r2_score as r2
 r2(Y_Test, Y_Pred)
 
+#Scatter plot of Prediction and test
+plt.scatter(Y_Pred, Y_Test)
+
+#Residual Histogram
+sns.distplot((Y_Test - Y_Pred), bins = 50)
+
+#Regression Evaluation Metrics
+
+#Mean Absolute Error (MAE) (Average) is the mean of the absolute value of the errors: MAE is the easiest to understand, because it's the average error.
+#Mean Squared Error (MSE) is the mean of the squared errors: MSE is more popular than MAE, because MSE "punishes" larger errors, which tends to be useful in the real world.
+#Root Mean Squared Error (RMSE) is the square root of the mean of the squared errors: RMSE is even more popular than MSE, because RMSE is interpretable in the "y" units.
+
+#All of these are loss functions, because we want to minimize them.
+
+from sklearn import metrics
+print('MAE:', metrics.mean_absolute_error(Y_Test, Y_Pred))
+print('MSE:', metrics.mean_squared_error(Y_Test, Y_Pred))
+print('RMSE:', np.sqrt(metrics.mean_squared_error(Y_Test, Y_Pred)))
+
+
+#-------------------------------------------------------------------------------------------------
 #Model using Stats Model
 import statsmodels.formula.api as sm
 lmregrs = sm.OLS(Y_Train, X_Train).fit()
@@ -96,20 +145,3 @@ plt.hlines(y=0, xmin=0, xmax=40)
 plt.title("Residuals Plot Train - Blue  Test - Green")
 plt.ylabel("Residuals")
 Text(0,0.5,"Residuals")
-
-#Model using Scikit learn
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
-
-#cannot use rank1 matrix in scikit learn
-X = X.reshape((m,1))
-#creating model
-lmreg = LinearRegression()
-#Fitting Training Model
-reg = reg.fit(X,Y)
-#Y Prediction
-Y_Pred = reg.predict(X)
-
-#Calculating R2 Score
-r2_score = reg.score(X,Y)
-print(R2_score)
