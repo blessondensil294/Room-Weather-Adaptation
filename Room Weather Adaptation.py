@@ -126,9 +126,9 @@ print('RMSE:', np.sqrt(metrics.mean_squared_error(Y_Test, Y_Pred)))
 
 #-------------------------------------------------------------------------------------------------
 #Model using Stats Model
-import statsmodels.formula.api as sm
-lmregrs = sm.OLS(Y_Train, X_Train).fit()
-lmregrs.summary()
+from statsmodels.formula.api import ols
+model = OLS(formula="Y_Train~X_Train", data=df).fit()
+model.summary()
 
 #Error Calculation of the training model 
 pred_train = lmregrs.predict(X_Train)
