@@ -34,6 +34,12 @@ wed.columns
 
 #EDA
 
+#To find the covariance of the variables
+np.cov()
+
+#To find the corelation of the variance
+np.corrcoef()
+
 #Pairplot of the data
 sns.pairplot(wed)
 
